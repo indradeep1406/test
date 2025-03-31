@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Cricket Stars Blitz</title>
+        <link rel="icon" href="favicon.png" type="image/x-icon" />
+        <style>
+            html,
+            body {
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+                /* background-color: black; */
+                background-image: url("./assets/BG\ 1920x1080.jpg");
+                background-size: cover;
+                background-repeat: no-repeat;
+                background-position: center;
+            }
+            #canvas-container {
+                width: 100vw;
+                height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                /* background-color: #000000; */
+            }
+            #canvas {
+                display: block;
+                background-color: #ffffff;
+            }
+        </style>
+        <script src="./jiogames_sp_wrapper.js"></script>
+    </head>
+    <body>
+        <div id="canvas-container">
+            <div id="canvas"></div>
+        </div>
+        <script src="bundle.js"></script>
+    </body>
+</html>

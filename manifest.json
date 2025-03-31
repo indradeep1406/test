@@ -1,0 +1,64 @@
+{
+    "version": "1.0.2",
+    "version_code": 3,
+    "name": "Cricket Stars Blitz",
+    "package_name": "com.crikey.cricketstarsblitzSP",
+    "description": "CricketStarsBlitz is an cricket card game with lots of cool batting style cards and bowling cards. Win matches to unlock your favorite cards.",
+    "launch_path": "/index.html",
+    "icons": {
+        "128": "/favicon.png"
+    },
+    "developer": {
+        "name": "GoLive Games",
+        "url": "https://golive.games/"
+    },
+    "default_locale": "en",
+    "fullscreen": true,
+    "permissions": {
+        "systemXHR": {
+            "description": "Req by SSO, This permission is require to call web api",
+            "access": "readwrite"
+        },
+        "device-storage:sdcard": {
+            "description": "Req by SSO readwrite readwrite access",
+            "name": "device-storage:sdcard",
+            "access": "readwrite"
+        },
+        "browser": {
+            "description": "Required for embedding a browser iframe",
+            "name": "browser",
+            "access": "readwrite"
+        },
+        "serviceworker": {
+            "description": "Required for push",
+            "name": "serviceworker",
+            "access": "readwrite"
+        },
+        "desktop-notification": {
+            "description": "Required for desktop notifications",
+            "name": "desktop-notification",
+            "access": "readwrite"
+        },
+        "volumemanager": {
+            "description": "Required for volume control using native method",
+            "name": "volumemanager",
+            "access": "readwrite"
+        },
+        "push": {
+            "description": "Required for notifications",
+            "name": "push",
+            "access": "readwrite"
+        },
+        "audio-capture": {
+            "description": "Required to capture audio using getUserMedia()",
+            "name": "audio-capture",
+            "access": "readwrite"
+        },
+        "datacall": {
+            "description": "Required to check internet connection",
+            "name": "datacall",
+            "access": "readwrite"
+        },
+        "cross-domain-content": ["https://domain-name/"]
+    }
+}
