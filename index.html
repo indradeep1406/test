@@ -15,6 +15,21 @@
                 background-repeat: no-repeat;
                 background-position: center;
             }
+            #showLeaderboardBtn {
+                position: absolute;
+                top: 20px;
+                left: 20px;
+                padding: 10px 15px;
+                background-color: #007bff;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                z-index: 1000; /* Ensure it's above the canvas */
+            }
+            #showLeaderboardBtn:hover {
+                background-color: #0056b3;
+            }
             #canvas-container {
                 width: 100vw;
                 height: 100vh;
@@ -33,7 +48,9 @@
     <body>
         <div id="canvas-container">
             <div id="canvas"></div>
+            <button id="showLeaderboardBtn">Show Leaderboard</button>
         </div>
+        <script src="./playgama_leaderboard.js"></script>
         <script src="bundle.js"></script>
     </body>
 </html>
