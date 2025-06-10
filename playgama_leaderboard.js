@@ -128,6 +128,7 @@ function displayDummyLeaderboard(leaderboardName) {
   // Main container
   const popup = document.createElement('div');
   popup.id = DUMMY_LEADERBOARD_POPUP_ID;
+  // Revert to original container style
   popup.style.cssText = popupStyles.container;
 
   // Title
@@ -180,6 +181,7 @@ function displayDummyLeaderboard(leaderboardName) {
   });
 
   popup.appendChild(list);
+  // Removed debug alert
   document.body.appendChild(popup);
 }
 
@@ -193,9 +195,10 @@ function showLeaderboard(leaderboardName) {
   console.log(`Showing leaderboard ${leaderboardName}`);
   if (typeof bridge === 'undefined' || !bridge.leaderboard) {
     console.error("Bridge or bridge.leaderboard is not available. Cannot show leaderboard.");
-    return;
+    // return; // Allow to proceed for dummy display
   }
 
+  // Removed DEBUG logs
   if (isNativePopupSupported()) {
     // Even if native is supported, we call the dummy for testing in this environment.
     // In a real scenario, you might only call bridge.leaderboard.showNativePopup(options);
