@@ -1,6 +1,6 @@
 // Playgama Leaderboard API functions
 
-const DEFAULT_LEADERBOARD_NAME = "global_high_scores";
+const DEFAULT_LEADERBOARD_NAME = "GLOBAL LEADERBOARD";
 
 /**
  * Checks if the leaderboard functionality is supported by the bridge.
@@ -107,7 +107,7 @@ const popupStyles = {
   listItemLast: "display: flex; justify-content: space-between; padding: 8px 0; border-bottom: none;",
   rank: "font-weight: bold; min-width: 30px; color: #4A90E2;",
   name: "flex-grow: 1; margin-left: 10px; margin-right: 10px; color: #555;",
-  score: "font-weight: bold; color: #E87A00;"
+  score: "font-weight: bold; color: #E87A00; padding: 10px"
 };
 
 const DUMMY_LEADERBOARD_POPUP_ID = 'dummyLeaderboardPopup';
@@ -133,7 +133,7 @@ function displayDummyLeaderboard(leaderboardName) {
 
   // Title
   const title = document.createElement('h2');
-  title.textContent = `Leaderboard: ${leaderboardName}`;
+  title.textContent = `${leaderboardName}`;
   title.style.cssText = popupStyles.title;
   popup.appendChild(title);
 
@@ -148,41 +148,122 @@ function displayDummyLeaderboard(leaderboardName) {
   const list = document.createElement('ul');
   list.style.cssText = popupStyles.list;
 
-  // Dummy data
-  const dummyPlayers = [
-    { rank: 1, name: "PlayerOne", score: 10000 },
-    { rank: 2, name: "PlayerTwo", score: 9500 },
-    { rank: 3, name: "PlayerThree", score: 8800 },
-    { rank: 4, name: "PlayerFour", score: 7200 },
-    { rank: 5, name: "PlayerFive", score: 6500 },
-    { rank: 6, name: "PlayerSix", score: 5000 },
-  ];
+  const heading = document.createElement('li');
+  heading.style.cssText = popupStyles.listItem;
+  const headingRank = document.createElement('span');
+  headingRank.textContent = 'Rank';
+  headingRank.style.cssText = popupStyles.rank;
+  const headingName = document.createElement('span');
+  headingName.textContent = 'Name';
+  headingName.style.cssText = popupStyles.name;
+  const headingMatch = document.createElement('span');
+  headingMatch.textContent = 'Matches';
+  headingMatch.style.cssText = popupStyles.score;
+  const headingWon = document.createElement('span');
+  headingWon.textContent = 'Won';
+  headingWon.style.cssText = popupStyles.score;
+  const headingLost = document.createElement('span');
+  headingLost.textContent = 'Lost';
+  headingLost.style.cssText = popupStyles.score;
+  const headingTie = document.createElement('span');
+  headingTie.textContent = 'Tie';
+  headingTie.style.cssText = popupStyles.score;
+  const headingRuns = document.createElement('span');
+  headingRuns.textContent = 'Runs';
+  headingRuns.style.cssText = popupStyles.score;
+  const heading4s = document.createElement('span');
+  heading4s.textContent = '4s';
+  heading4s.style.cssText = popupStyles.score;
+  const heading6s = document.createElement('span');
+  heading6s.textContent = '6s';
+  heading6s.style.cssText = popupStyles.score;
+  const headingbp = document.createElement('span');
+  headingbp.textContent = 'Balls Played';
+  headingbp.style.cssText = popupStyles.score;
 
-  dummyPlayers.forEach((player, index) => {
+  heading.appendChild(headingRank);
+  heading.appendChild(headingName);
+  heading.appendChild(headingMatch);
+  heading.appendChild(headingWon);
+  heading.appendChild(headingLost);
+  heading.appendChild(headingTie);
+  heading.appendChild(headingRuns);
+  heading.appendChild(heading4s);
+  heading.appendChild(heading6s);
+  heading.appendChild(headingbp);
+  list.appendChild(heading);
+  // Dummy data
+  fetch('http://127.0.0.1:8000/leaderboard')
+    .then(response => response.json())
+    .then(data => {
+      dummyPlayers = data;
+      dummyPlayers.sort((a, b) => b.score - a.score);
+
+
+      dummyPlayers.forEach((player, index) => {
     const listItem = document.createElement('li');
     listItem.style.cssText = (index === dummyPlayers.length - 1) ? popupStyles.listItemLast : popupStyles.listItem;
 
     const rankSpan = document.createElement('span');
-    rankSpan.textContent = player.rank;
+    rankSpan.textContent = player["Rank"];
     rankSpan.style.cssText = popupStyles.rank;
 
     const nameSpan = document.createElement('span');
-    nameSpan.textContent = player.name;
+    nameSpan.textContent = player["Name"];
     nameSpan.style.cssText = popupStyles.name;
 
-    const scoreSpan = document.createElement('span');
-    scoreSpan.textContent = player.score;
-    scoreSpan.style.cssText = popupStyles.score;
+    const matchSpan = document.createElement('span');
+    matchSpan.textContent = player["Matches"];
+    matchSpan.style.cssText = popupStyles.score;
+
+    const wonSpan = document.createElement('span');
+    wonSpan.textContent = player["Won"];
+    wonSpan.style.cssText = popupStyles.score;
+
+    const lostSpan = document.createElement('span');
+    lostSpan.textContent = player["Lost"];
+    lostSpan.style.cssText = popupStyles.score;
+
+    const tieSpan = document.createElement('span');
+    tieSpan.textContent = player["Tie"];
+    tieSpan.style.cssText = popupStyles.score;
+
+    const runSpan = document.createElement('span');
+    runSpan.textContent = player["Runs"];
+    runSpan.style.cssText = popupStyles.score;
+
+    const fourSpan = document.createElement('span');
+    fourSpan.textContent = player["4s"];
+    fourSpan.style.cssText = popupStyles.score;
+
+    const sixSpan = document.createElement('span');
+    sixSpan.textContent = player["6s"];
+    sixSpan.style.cssText = popupStyles.score;
+
+    const bpSpan = document.createElement('span');
+    bpSpan.textContent = player["Balls Played"];
+    bpSpan.style.cssText = popupStyles.score;
 
     listItem.appendChild(rankSpan);
     listItem.appendChild(nameSpan);
-    listItem.appendChild(scoreSpan);
+    listItem.appendChild(matchSpan);
+    listItem.appendChild(wonSpan);
+    listItem.appendChild(lostSpan);
+    listItem.appendChild(tieSpan);
+    listItem.appendChild(runSpan);
+    listItem.appendChild(fourSpan);
+    listItem.appendChild(sixSpan);
+    listItem.appendChild(bpSpan);
     list.appendChild(listItem);
-  });
 
-  popup.appendChild(list);
-  // Removed debug alert
-  document.body.appendChild(popup);
+    popup.appendChild(list);
+    // Removed debug alert
+    document.body.appendChild(popup);
+  });
+})
+
+  
+
 }
 
 
