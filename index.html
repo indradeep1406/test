@@ -16,19 +16,22 @@
                 background-position: center;
             }
             #showLeaderboardBtn {
-                position: absolute;
-                top: 20px;
-                left: 20px;
-                padding: 10px 15px;
-                background-color: #007bff;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-                z-index: 1000; /* Ensure it's above the canvas */
+                position: absolute; /* keep */
+                top: 50%; /* Estimated from yPercent=50 */
+                left: 7.5%; /* Estimated from xPercent=7.5 */
+                width: 55%; /* Estimated from widthPercent=55 */
+                height: 10%; /* GUESS for height - might need adjustment if asset aspect ratio known */
+                transform: translateY(-50%); /* To center vertically if top is 50% */
+                padding: 0; /* remove padding */
+                background-color: transparent; /* make transparent */
+                border: none; /* ensure no border */
+                color: transparent; /* hide text */
+                opacity: 0.01; /* effectively invisible but clickable */
+                z-index: 995; /* Above campaign button (z-index 3) but below leaderboard popup (z-index 1001) */
+                cursor: pointer; /* keep */
             }
             #showLeaderboardBtn:hover {
-                background-color: #0056b3;
+                background-color: transparent; /* Ensure hover doesn't make it visible */
             }
             #canvas-container {
                 width: 100vw;
@@ -46,7 +49,7 @@
         <script src="./jiogames_sp_wrapper.js"></script>
         <style>
             #campaign_text { display: none !important; }
-            #campaign_button { display: none !important; }
+            /* #campaign_button rule removed to ensure visibility */
         </style>
     </head>
     <body>
