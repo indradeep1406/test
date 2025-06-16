@@ -16,22 +16,25 @@
                 background-position: center;
             }
             #showLeaderboardBtn {
-                position: absolute; /* keep */
-                top: 50%; /* Estimated from yPercent=50 */
-                left: 7.5%; /* Estimated from xPercent=7.5 */
-                width: 55%; /* Estimated from widthPercent=55 */
-                height: 10%; /* GUESS for height - might need adjustment if asset aspect ratio known */
-                transform: translateY(-50%); /* To center vertically if top is 50% */
-                padding: 0; /* remove padding */
-                background-color: transparent; /* make transparent */
-                border: none; /* ensure no border */
-                color: transparent; /* hide text */
-                opacity: 0.01; /* effectively invisible but clickable */
-                z-index: 995; /* Above campaign button (z-index 3) but below leaderboard popup (z-index 1001) */
-                cursor: pointer; /* keep */
+                position: absolute;
+                /* Estimated position and size to cover #campaign_button */
+                top: 50%; /* Example: Center of canvas/container */
+                left: 7.5%; /* Example: From campaign_button's xPercent */
+                width: 55%; /* Example: From campaign_button's widthPercent */
+                height: 10%; /* Example: A guess, adjust if asset aspect ratio known */
+                transform: translateY(-50%); /* Helps center if top is 50% of parent */
+
+                /* Make it transparent and ensure it's on top */
+                opacity: 0.01; /* Nearly invisible but clickable */
+                background-color: transparent;
+                border: none;
+                color: transparent; /* Hide original button text */
+                padding: 0; /* Remove padding that might affect size */
+                z-index: 100; /* Higher than #campaign_button (50), lower than leaderboard popup (1001) */
+                cursor: pointer;
             }
-            #showLeaderboardBtn:hover {
-                background-color: transparent; /* Ensure hover doesn't make it visible */
+            #showLeaderboardBtn:hover { /* Ensure hover doesn't make it visible */
+                background-color: transparent;
             }
             #canvas-container {
                 width: 100vw;
@@ -49,7 +52,7 @@
         <script src="./jiogames_sp_wrapper.js"></script>
         <style>
             #campaign_text { display: none !important; }
-            /* #campaign_button rule removed to ensure visibility */
+            #campaign_button { display: block !important; z-index: 50 !important; }
         </style>
     </head>
     <body>
