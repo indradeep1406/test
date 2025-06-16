@@ -17,32 +17,31 @@
             }
             #showLeaderboardBtn {
                 position: absolute;
-                top: 50%; /* Estimated position */
-                left: 7.5%; /* Estimated position */
-                width: 55%; /* Estimated size */
-                height: 10%; /* Estimated size */
-                transform: translateY(-50%); /* For vertical centering if top is 50% */
-
-                background-image: url('assets/Button_Y.png');
-                background-size: 100% 100%; /* Stretch image to fill dimensions */
+                top: 58%;
+                left: 24%;
+                width: 52%;
+                height: 8%;
+                transform: translateY(-50%);
+                background-image: url(assets/Button_Y.png);
+                background-size: 100% 100%;
                 background-repeat: no-repeat;
                 background-position: center;
-
                 border: none;
-                text-align: center; /* For new text */
-                font-size: 2vh; /* Example size for new text */
-                font-weight: bold; /* Example style for new text */
-                line-height: 10vh; /* Vertically center text if height is 10vh, adjust as needed */
-                color: rgb(15, 20, 65); /* Dark text color for yellow button */
-
-                text-decoration: none; /* Remove underline if it appears */
+                text-align: center;
+                font-size: 2vh;
+                font-weight: bold;
+                line-height: 10vh; /* As per user, though height is 8% */
+                color: rgb(15, 20, 65);
+                text-decoration: none;
                 padding: 0;
-                z-index: 200 !important; /* Ensure it's on top */
+                z-index: 200 !important;
                 cursor: pointer;
-                opacity: 1; /* Make it fully visible */
+                opacity: 1;
+                background-color: transparent; /* Added */
             }
             #showLeaderboardBtn:hover {
-                filter: brightness(1.1); /* Optional: slight hover effect */
+                filter: brightness(1.1);
+                background-color: transparent; /* Ensure hover also transparent */
             }
             #canvas-container {
                 width: 100vw;
