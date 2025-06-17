@@ -9,30 +9,58 @@
                 margin: 0;
                 padding: 0;
                 overflow: hidden;
-                /* background-color: black; */
                 background-image: url("./assets/BG\ 1920x1080.jpg");
                 background-size: cover;
                 background-repeat: no-repeat;
                 background-position: center;
             }
+            
+            /* Leaderboard button styling to match game buttons */
             #showLeaderboardBtn {
-                /* All custom styles removed to allow user's CSS to take over. */
-                /* Browser default <button> styles may apply. */
+                /* Position it like other game buttons using the same coordinate system */
+                position: absolute;
+                width: 55%; /* Same as other buttons like campaign_button */
+                height: 7.5%; /* Same as other buttons */
+                background-image: url(assets/Button_Y.png); /* Use yellow button style */
+                background-size: 100% 100%;
+                background-repeat: no-repeat;
+                background-position: center;
+                background-color: transparent; /* Ensure no background color */
+                border: none;
+                outline: none; /* Remove any outline */
+                cursor: pointer;
+                z-index: 10; /* High z-index to appear above game elements */
+                
+                /* Text styling to match other buttons */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: rgb(15, 20, 65); /* Black/dark blue text like other yellow buttons */
+                font-family: 'CustomFont', sans-serif;
+                font-style: italic;
+                font-size: 3vh; /* Responsive font size */
+                font-weight: bold;
+                text-shadow: none; /* Remove shadow for black text on yellow background */
+                
+                /* This will be positioned by JavaScript to match game coordinate system */
+                display: none; /* Initially hidden, will be shown by JavaScript */
             }
+            
             #showLeaderboardBtn:hover {
-                /* All custom styles removed. */
+                filter: brightness(1.1);
             }
+            
             #canvas-container {
                 width: 100vw;
                 height: 100vh;
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                /* background-color: #000000; */
             }
+            
             #canvas {
                 display: block;
-                background-color: #ffffff;
+                background-color: transparent;
             }
         </style>
         <script src="./jiogames_sp_wrapper.js"></script>
@@ -44,17 +72,365 @@
     <body>
         <div id="canvas-container">
             <div id="canvas"></div>
-            <button id="showLeaderboardBtn">Show Leaderboard</button>
+            <button id="showLeaderboardBtn">LEADERBOARD</button>
         </div>
         <script src="./playgama_leaderboard.js"></script>
         <script src="bundle.js"></script>
         <script>
+            // Function to position the leaderboard button using the same coordinate system as game buttons
+            function positionLeaderboardButton() {
+                const canvas = document.getElementById('canvas');
+                const leaderboardBtn = document.getElementById('showLeaderboardBtn');
+                
+                if (!canvas || !leaderboardBtn) return;
+                
+                // Get canvas dimensions and position
+                const canvasRect = canvas.getBoundingClientRect();
+                const canvasWidth = canvasRect.width;
+                const canvasHeight = canvasRect.height;
+                const canvasLeft = canvasRect.left;
+                const canvasTop = canvasRect.top;
+                
+                // Calculate button dimensions (same as other game buttons: 55% width, 7.5% height)
+                const buttonWidth = (canvasWidth * 55) / 100;
+                const buttonHeight = (canvasHeight * 7.5) / 100;
+                
+                // Position it between CAMPAIGN and MY DECK buttons
+                // CAMPAIGN is at pos_y = 180, MY DECK at pos_y = 305
+                // Using the same positioning logic as in insertImage function
+                const pos_x = 50; // Centered horizontally
+                const pos_y = 242; // Evenly spaced between CAMPAIGN and MY DECK
+                
+                const buttonLeft = canvasLeft + (canvasWidth * 0.5) - (buttonWidth * (1 - pos_x / 100));
+                const buttonTop = canvasTop + (canvasHeight * 0.5) - (buttonHeight * (1 - pos_y / 100));
+                
+                // Apply the calculated position
+                leaderboardBtn.style.left = `${buttonLeft}px`;
+                leaderboardBtn.style.top = `${buttonTop}px`;
+                leaderboardBtn.style.width = `${buttonWidth}px`;
+                leaderboardBtn.style.height = `${buttonHeight}px`;
+                
+                // Show the button now that it's properly positioned
+                leaderboardBtn.style.display = 'flex';
+            }
+            
+            // Function to check if we're on the home screen and should show the leaderboard button
+            function updateLeaderboardButtonVisibility() {
+                const homeComponent = document.getElementById('home');
+                const leaderboardBtn = document.getElementById('showLeaderboardBtn');
+                
+                if (!leaderboardBtn) return;
+                
+                // Only show the leaderboard button when on the home screen
+                if (homeComponent) {
+                    positionLeaderboardButton();
+                } else {
+                    leaderboardBtn.style.display = 'none';
+                }
+            }
+            
+            // Initialize when page loads
             document.addEventListener('DOMContentLoaded', function() {
-                var btn = document.getElementById('showLeaderboardBtn');
-                if (btn) {
-                    btn.textContent = 'LEADERBOARD';
+                // Load custom font (same as used in game)
+                const font = new FontFace('CustomFont', "url('assets/Prometo-Bold.ttf')");
+                font.load().then(function(loadedFont) {
+                    document.fonts.add(loadedFont);
+                    
+                    // Initial positioning
+                    setTimeout(updateLeaderboardButtonVisibility, 100);
+                    
+                    // Update positioning when window resizes (same as game does)
+                    window.addEventListener('resize', function() {
+                        setTimeout(updateLeaderboardButtonVisibility, 100);
+                    });
+                    
+                    // Monitor for game screen changes using MutationObserver
+                    const canvas = document.getElementById('canvas');
+                    if (canvas) {
+                        const observer = new MutationObserver(function(mutations) {
+                            mutations.forEach(function(mutation) {
+                                if (mutation.type === 'childList') {
+                                    // Check if home component was added/removed
+                                    setTimeout(updateLeaderboardButtonVisibility, 50);
+                                }
+                            });
+                        });
+                        
+                        observer.observe(canvas, {
+                            childList: true,
+                            subtree: true
+                        });
+                    }
+                });
+                
+                // Set up click handler for leaderboard button
+                const leaderboardBtn = document.getElementById('showLeaderboardBtn');
+                if (leaderboardBtn) {
+                    leaderboardBtn.addEventListener('click', function() {
+                        console.log('Leaderboard button clicked');
+                        if (typeof showLeaderboard === 'function') {
+                            showLeaderboard('GLOBAL LEADERBOARD');
+                        }
+                    });
                 }
             });
+            
+            // Also check visibility when localStorage changes (indicating screen changes)
+            let lastLocation = '';
+            setInterval(function() {
+                const currentLocation = localStorage.getItem('blitz_current_location');
+                if (currentLocation !== lastLocation) {
+                    lastLocation = currentLocation;
+                    setTimeout(updateLeaderboardButtonVisibility, 100);
+                }
+            }, 500);
+        </script>
+
+        <!-- Leaderboard popup styles and functionality -->
+        <script>
+            // Styles for the leaderboard popup
+            const popupStyles = {
+                container: "position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(255, 255, 0, 0.9); border: 2px solid #4A90E2; padding: 25px; z-index: 1001; min-width: 320px; max-width: 90%; box-shadow: 0 5px 15px rgba(0,0,0,0.3); border-radius: 10px; font-family: Arial, sans-serif;",
+                title: "font-size: 1.8em; margin-bottom: 15px; text-align: center; color: black;",
+                closeButton: "position: absolute; top: 10px; right: 15px; cursor: pointer; font-size: 1.5em; color: black; line-height: 1;",
+                list: "list-style: none; padding: 0; margin-top: 10px;",
+                listItem: "display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.2);",
+                listItemLast: "display: flex; justify-content: space-between; padding: 8px 0; border-bottom: none;",
+                rank: "font-weight: bold; min-width: 30px; color: black;",
+                name: "flex-grow: 1; margin-left: 10px; margin-right: 10px; color: black;",
+                score: "font-weight: bold; color: black; padding: 10px"
+            };
+
+            const DUMMY_LEADERBOARD_POPUP_ID = 'dummyLeaderboardPopup';
+
+            function displayDummyLeaderboard(leaderboardName) {
+                console.log(`Displaying leaderboard for: ${leaderboardName}`);
+
+                // Remove existing popup if any
+                const existingPopup = document.getElementById(DUMMY_LEADERBOARD_POPUP_ID);
+                if (existingPopup) {
+                    existingPopup.remove();
+                }
+
+                // Main container
+                const popup = document.createElement('div');
+                popup.id = DUMMY_LEADERBOARD_POPUP_ID;
+                popup.style.cssText = popupStyles.container;
+
+                // Title
+                const title = document.createElement('h2');
+                title.textContent = `${leaderboardName}`;
+                title.style.cssText = popupStyles.title;
+                popup.appendChild(title);
+
+                // Close button
+                const closeButton = document.createElement('span');
+                closeButton.innerHTML = '&times;';
+                closeButton.style.cssText = popupStyles.closeButton;
+                closeButton.onclick = () => popup.remove();
+                popup.appendChild(closeButton);
+
+                // Leaderboard list
+                const list = document.createElement('ul');
+                list.style.cssText = popupStyles.list;
+
+                const heading = document.createElement('li');
+                heading.style.cssText = popupStyles.listItem;
+                
+                const headingRank = document.createElement('span');
+                headingRank.textContent = 'Rank';
+                headingRank.style.cssText = popupStyles.rank;
+                
+                const headingName = document.createElement('span');
+                headingName.textContent = 'Name';
+                headingName.style.cssText = popupStyles.name;
+                
+                const headingMatch = document.createElement('span');
+                headingMatch.textContent = 'Matches';
+                headingMatch.style.cssText = popupStyles.score;
+                
+                const headingWon = document.createElement('span');
+                headingWon.textContent = 'Won';
+                headingWon.style.cssText = popupStyles.score;
+                
+                const headingLost = document.createElement('span');
+                headingLost.textContent = 'Lost';
+                headingLost.style.cssText = popupStyles.score;
+                
+                const headingTie = document.createElement('span');
+                headingTie.textContent = 'Tie';
+                headingTie.style.cssText = popupStyles.score;
+                
+                const headingRuns = document.createElement('span');
+                headingRuns.textContent = 'Runs';
+                headingRuns.style.cssText = popupStyles.score;
+                
+                const heading4s = document.createElement('span');
+                heading4s.textContent = '4s';
+                heading4s.style.cssText = popupStyles.score;
+                
+                const heading6s = document.createElement('span');
+                heading6s.textContent = '6s';
+                heading6s.style.cssText = popupStyles.score;
+                
+                const headingbp = document.createElement('span');
+                headingbp.textContent = 'Balls Played';
+                headingbp.style.cssText = popupStyles.score;
+
+                heading.appendChild(headingRank);
+                heading.appendChild(headingName);
+                heading.appendChild(headingMatch);
+                heading.appendChild(headingWon);
+                heading.appendChild(headingLost);
+                heading.appendChild(headingTie);
+                heading.appendChild(headingRuns);
+                heading.appendChild(heading4s);
+                heading.appendChild(heading6s);
+                heading.appendChild(headingbp);
+                list.appendChild(heading);
+
+                // Fetch leaderboard data
+                fetch('http://127.0.0.1:8000/leaderboard')
+                    .then(response => response.json())
+                    .then(data => {
+                        dummyPlayers = data;
+                        dummyPlayers.sort((a, b) => b.score - a.score);
+
+                        dummyPlayers.forEach((player, index) => {
+                            const listItem = document.createElement('li');
+                            listItem.style.cssText = (index === dummyPlayers.length - 1) ? popupStyles.listItemLast : popupStyles.listItem;
+
+                            const rankSpan = document.createElement('span');
+                            rankSpan.textContent = player["Rank"];
+                            rankSpan.style.cssText = popupStyles.rank;
+
+                            const nameSpan = document.createElement('span');
+                            nameSpan.textContent = player["Name"];
+                            nameSpan.style.cssText = popupStyles.name;
+
+                            const matchSpan = document.createElement('span');
+                            matchSpan.textContent = player["Matches"];
+                            matchSpan.style.cssText = popupStyles.score;
+
+                            const wonSpan = document.createElement('span');
+                            wonSpan.textContent = player["Won"];
+                            wonSpan.style.cssText = popupStyles.score;
+
+                            const lostSpan = document.createElement('span');
+                            lostSpan.textContent = player["Lost"];
+                            lostSpan.style.cssText = popupStyles.score;
+
+                            const tieSpan = document.createElement('span');
+                            tieSpan.textContent = player["Tie"];
+                            tieSpan.style.cssText = popupStyles.score;
+
+                            const runSpan = document.createElement('span');
+                            runSpan.textContent = player["Runs"];
+                            runSpan.style.cssText = popupStyles.score;
+
+                            const fourSpan = document.createElement('span');
+                            fourSpan.textContent = player["4s"];
+                            fourSpan.style.cssText = popupStyles.score;
+
+                            const sixSpan = document.createElement('span');
+                            sixSpan.textContent = player["6s"];
+                            sixSpan.style.cssText = popupStyles.score;
+
+                            const bpSpan = document.createElement('span');
+                            bpSpan.textContent = player["Balls Played"];
+                            bpSpan.style.cssText = popupStyles.score;
+
+                            listItem.appendChild(rankSpan);
+                            listItem.appendChild(nameSpan);
+                            listItem.appendChild(matchSpan);
+                            listItem.appendChild(wonSpan);
+                            listItem.appendChild(lostSpan);
+                            listItem.appendChild(tieSpan);
+                            listItem.appendChild(runSpan);
+                            listItem.appendChild(fourSpan);
+                            listItem.appendChild(sixSpan);
+                            listItem.appendChild(bpSpan);
+                            list.appendChild(listItem);
+                        });
+
+                        popup.appendChild(list);
+                        document.body.appendChild(popup);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching leaderboard data:', error);
+                        // Show dummy data if fetch fails
+                        const dummyData = [
+                            {Rank: 1, Name: "Player1", Matches: 10, Won: 8, Lost: 1, Tie: 1, Runs: 450, "4s": 25, "6s": 15, "Balls Played": 60},
+                            {Rank: 2, Name: "Player2", Matches: 8, Won: 6, Lost: 2, Tie: 0, Runs: 380, "4s": 20, "6s": 12, "Balls Played": 48},
+                            {Rank: 3, Name: "Player3", Matches: 12, Won: 7, Lost: 4, Tie: 1, Runs: 420, "4s": 22, "6s": 10, "Balls Played": 72}
+                        ];
+
+                        dummyData.forEach((player, index) => {
+                            const listItem = document.createElement('li');
+                            listItem.style.cssText = (index === dummyData.length - 1) ? popupStyles.listItemLast : popupStyles.listItem;
+
+                            const rankSpan = document.createElement('span');
+                            rankSpan.textContent = player.Rank;
+                            rankSpan.style.cssText = popupStyles.rank;
+
+                            const nameSpan = document.createElement('span');
+                            nameSpan.textContent = player.Name;
+                            nameSpan.style.cssText = popupStyles.name;
+
+                            const matchSpan = document.createElement('span');
+                            matchSpan.textContent = player.Matches;
+                            matchSpan.style.cssText = popupStyles.score;
+
+                            const wonSpan = document.createElement('span');
+                            wonSpan.textContent = player.Won;
+                            wonSpan.style.cssText = popupStyles.score;
+
+                            const lostSpan = document.createElement('span');
+                            lostSpan.textContent = player.Lost;
+                            lostSpan.style.cssText = popupStyles.score;
+
+                            const tieSpan = document.createElement('span');
+                            tieSpan.textContent = player.Tie;
+                            tieSpan.style.cssText = popupStyles.score;
+
+                            const runSpan = document.createElement('span');
+                            runSpan.textContent = player.Runs;
+                            runSpan.style.cssText = popupStyles.score;
+
+                            const fourSpan = document.createElement('span');
+                            fourSpan.textContent = player["4s"];
+                            fourSpan.style.cssText = popupStyles.score;
+
+                            const sixSpan = document.createElement('span');
+                            sixSpan.textContent = player["6s"];
+                            sixSpan.style.cssText = popupStyles.score;
+
+                            const bpSpan = document.createElement('span');
+                            bpSpan.textContent = player["Balls Played"];
+                            bpSpan.style.cssText = popupStyles.score;
+
+                            listItem.appendChild(rankSpan);
+                            listItem.appendChild(nameSpan);
+                            listItem.appendChild(matchSpan);
+                            listItem.appendChild(wonSpan);
+                            listItem.appendChild(lostSpan);
+                            listItem.appendChild(tieSpan);
+                            listItem.appendChild(runSpan);
+                            listItem.appendChild(fourSpan);
+                            listItem.appendChild(sixSpan);
+                            listItem.appendChild(bpSpan);
+                            list.appendChild(listItem);
+                        });
+
+                        popup.appendChild(list);
+                        document.body.appendChild(popup);
+                    });
+            }
+
+            function showLeaderboard(leaderboardName) {
+                console.log(`Showing leaderboard ${leaderboardName}`);
+                displayDummyLeaderboard(leaderboardName);
+            }
         </script>
     </body>
 </html>
