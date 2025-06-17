@@ -9,58 +9,30 @@
                 margin: 0;
                 padding: 0;
                 overflow: hidden;
+                /* background-color: black; */
                 background-image: url("./assets/BG\ 1920x1080.jpg");
                 background-size: cover;
                 background-repeat: no-repeat;
                 background-position: center;
             }
-            
-            /* Remove the old leaderboard button styles and replace with game-consistent styling */
             #showLeaderboardBtn {
-                /* Position it like other game buttons using the same coordinate system */
-                position: absolute;
-                width: 55%; /* Same as other buttons like campaign_button */
-                height: 7.5%; /* Same as other buttons */
-                background-image: url(assets/Button_Y.png); /* Use yellow button style */
-                background-size: 100% 100%;
-                background-repeat: no-repeat;
-                background-position: center;
-                background-color: transparent; /* Ensure no background color */
-                border: none;
-                outline: none; /* Remove any outline */
-                cursor: pointer;
-                z-index: 10; /* High z-index to appear above game elements */
-                
-                /* Text styling to match other buttons */
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: rgb(15, 20, 65); /* Black/dark blue text like other yellow buttons */
-                font-family: 'CustomFont', sans-serif;
-                font-style: italic;
-                font-size: 3vh; /* Responsive font size */
-                font-weight: bold;
-                text-shadow: none; /* Remove shadow for black text on yellow background */
-                
-                /* This will be positioned by JavaScript to match game coordinate system */
-                display: none; /* Initially hidden, will be shown by JavaScript */
+                /* All custom styles removed to allow user's CSS to take over. */
+                /* Browser default <button> styles may apply. */
             }
-            
             #showLeaderboardBtn:hover {
-                filter: brightness(1.1);
+                /* All custom styles removed. */
             }
-            
             #canvas-container {
                 width: 100vw;
                 height: 100vh;
                 display: flex;
                 justify-content: center;
                 align-items: center;
+                /* background-color: #000000; */
             }
-            
             #canvas {
                 display: block;
-                background-color: transparent;
+                background-color: #ffffff;
             }
         </style>
         <script src="./jiogames_sp_wrapper.js"></script>
@@ -72,118 +44,27 @@
     <body>
         <div id="canvas-container">
             <div id="canvas"></div>
-            <button id="showLeaderboardBtn">LEADERBOARD</button>
+            <button id="showLeaderboardBtn">Show Leaderboard</button>
         </div>
         <script src="./playgama_leaderboard.js"></script>
         <script src="bundle.js"></script>
         <script>
-            // Function to position the leaderboard button using the same coordinate system as game buttons
-            function positionLeaderboardButton() {
-                const canvas = document.getElementById('canvas');
-                const leaderboardBtn = document.getElementById('showLeaderboardBtn');
-                
-                if (!canvas || !leaderboardBtn) return;
-                
-                // Get canvas dimensions and position
-                const canvasRect = canvas.getBoundingClientRect();
-                const canvasWidth = canvasRect.width;
-                const canvasHeight = canvasRect.height;
-                const canvasLeft = canvasRect.left;
-                const canvasTop = canvasRect.top;
-                
-                // Calculate button dimensions (same as other game buttons: 55% width, 7.5% height)
-                const buttonWidth = (canvasWidth * 55) / 100;
-                const buttonHeight = (canvasHeight * 7.5) / 100;
-                
-                // Position it with even spacing between buttons
-                // CAMPAIGN is at pos_y = 180, MY DECK at pos_y = 305, so LEADERBOARD should be at 242.5
-                // Using the same positioning logic as in insertImage function
-                const pos_x = 50; // Centered horizontally
-                const pos_y = 180; // Evenly spaced between CAMPAIGN and MY DECK
-                
-                const buttonLeft = canvasLeft + (canvasWidth * 0.5) - (buttonWidth * (1 - pos_x / 100));
-                const buttonTop = canvasTop + (canvasHeight * 0.5) - (buttonHeight * (1 - pos_y / 100));
-                
-                // Apply the calculated position
-                leaderboardBtn.style.left = `${buttonLeft}px`;
-                leaderboardBtn.style.top = `${buttonTop}px`;
-                leaderboardBtn.style.width = `${buttonWidth}px`;
-                leaderboardBtn.style.height = `${buttonHeight}px`;
-                
-                // Show the button now that it's properly positioned
-                leaderboardBtn.style.display = 'flex';
-            }
-            
-            // Function to check if we're on the home screen and should show the leaderboard button
-            function updateLeaderboardButtonVisibility() {
-                const homeComponent = document.getElementById('home');
-                const leaderboardBtn = document.getElementById('showLeaderboardBtn');
-                
-                if (!leaderboardBtn) return;
-                
-                // Only show the leaderboard button when on the home screen
-                if (homeComponent) {
-                    positionLeaderboardButton();
+    document.addEventListener('DOMContentLoaded', function() {
+        var btn = document.getElementById('showLeaderboardBtn');
+        if (btn) {
+            btn.textContent = 'LEADERBOARD';
+
+            btn.addEventListener('click', function() {
+                if (typeof showLeaderboard === 'function') {
+                    showLeaderboard();
                 } else {
-                    leaderboardBtn.style.display = 'none';
-                }
-            }
-            
-            // Initialize when page loads
-            document.addEventListener('DOMContentLoaded', function() {
-                // Load custom font (same as used in game)
-                const font = new FontFace('CustomFont', "url('assets/Prometo-Bold.ttf')");
-                font.load().then(function(loadedFont) {
-                    document.fonts.add(loadedFont);
-                    
-                    // Initial positioning
-                    setTimeout(updateLeaderboardButtonVisibility, 100);
-                    
-                    // Update positioning when window resizes (same as game does)
-                    window.addEventListener('resize', function() {
-                        setTimeout(updateLeaderboardButtonVisibility, 100);
-                    });
-                    
-                    // Monitor for game screen changes using MutationObserver
-                    const canvas = document.getElementById('canvas');
-                    if (canvas) {
-                        const observer = new MutationObserver(function(mutations) {
-                            mutations.forEach(function(mutation) {
-                                if (mutation.type === 'childList') {
-                                    // Check if home component was added/removed
-                                    setTimeout(updateLeaderboardButtonVisibility, 50);
-                                }
-                            });
-                        });
-                        
-                        observer.observe(canvas, {
-                            childList: true,
-                            subtree: true
-                        });
-                    }
-                });
-                
-                // Set up click handler for leaderboard button
-                const leaderboardBtn = document.getElementById('showLeaderboardBtn');
-                if (leaderboardBtn) {
-                    leaderboardBtn.addEventListener('click', function() {
-                        console.log('Leaderboard button clicked');
-                        if (typeof showLeaderboard === 'function') {
-                            showLeaderboard('GLOBAL LEADERBOARD');
-                        }
-                    });
+                    console.error('showLeaderboard function is not defined or not accessible.');
                 }
             });
-            
-            // Also check visibility when localStorage changes (indicating screen changes)
-            let lastLocation = '';
-            setInterval(function() {
-                const currentLocation = localStorage.getItem('blitz_current_location');
-                if (currentLocation !== lastLocation) {
-                    lastLocation = currentLocation;
-                    setTimeout(updateLeaderboardButtonVisibility, 100);
-                }
-            }, 500);
-        </script>
+        } else {
+            console.error('Button with id "showLeaderboardBtn" not found.');
+        }
+    });
+</script>
     </body>
 </html>
