@@ -235,12 +235,15 @@
                                     // Attach listeners for campaign level buttons if they appear
                                     const campaignScreen = document.getElementById('campaign');
                                     if (campaignScreen) {
-                                        attachCampaignLevelListener('level1_button', 5, 1);
-                                        attachCampaignLevelListener('level1_play', 5, 1);
-                                        attachCampaignLevelListener('level2_button', 6, 2);
-                                        attachCampaignLevelListener('level2_play', 6, 2);
-                                        attachCampaignLevelListener('level3_button', 7, 3);
-                                        attachCampaignLevelListener('level3_play', 7, 3);
+                                        const num_campaign_levels = 32; // Ensure this matches bundle.js
+                                        for (let i = 1; i <= num_campaign_levels; i++) {
+                                            // Calculate runsValue: level 1 = 5 runs, level i = i + 4 runs
+                                            let runsValue = i + 4;
+                                            // Attach to the main button (background image)
+                                            attachCampaignLevelListener(`level${i}_button`, runsValue, i);
+                                            // Also attach to the play icon overlay if it exists and is separate
+                                            attachCampaignLevelListener(`level${i}_play`, runsValue, i);
+                                        }
                                     }
                                 }
                             });
