@@ -146,12 +146,100 @@
                     
                     // Monitor for game screen changes using MutationObserver
                     const canvas = document.getElementById('canvas');
+
+                    function _clearScreen() {
+                        if (typeof clearScreen === 'function') {
+                            console.log('Calling global clearScreen()');
+                            clearScreen();
+                        } else if (window.sup_func && typeof window.sup_func.clearScreen === 'function') {
+                            console.log('Calling window.sup_func.clearScreen()');
+                            window.sup_func.clearScreen();
+                        } else {
+                            console.error('clearScreen function not found. Attempting manual removal of current component.');
+                            const campaignElement = document.getElementById('campaign');
+                            if (campaignElement) {
+                                campaignElement.remove();
+                                console.log('#campaign element removed as fallback.');
+                                return;
+                            }
+                            const homeElement = document.getElementById('home');
+                            if (homeElement) {
+                                homeElement.remove();
+                                console.log('#home element removed as fallback.');
+                            } else {
+                                console.error('Neither #campaign nor #home element found for manual removal.');
+                            }
+                        }
+                    }
+
+                    function _createComponent(componentName) {
+                        if (typeof createComponent === 'function') {
+                            console.log(`Calling global createComponent("${componentName}")`);
+                            createComponent(componentName);
+                        } else if (window.components && typeof window.components.createComponent === 'function') {
+                            console.log(`Calling window.components.createComponent("${componentName}")`);
+                            window.components.createComponent(componentName);
+                        } else {
+                            console.error(`createComponent function not found. Cannot create "${componentName}".`);
+                        }
+                    }
+
+                    function attachCampaignLevelListener(elementId, runsValue, levelNum) {
+                        const element = document.getElementById(elementId);
+                        if (element && !element.dataset.customCampaignListenerAttached) {
+                            element.dataset.customCampaignListenerAttached = 'true';
+                            element.addEventListener('click', function(event) {
+                                console.log(`Custom campaign listener for ${elementId} triggered.`);
+                                event.stopImmediatePropagation();
+
+                                _clearScreen();
+                                localStorage.setItem("blitz_game_type", "campaign");
+                                localStorage.setItem("blitz_campaign_runs", runsValue.toString());
+                                // Also setting blitz_campaign_level to ensure consistency if game logic uses it
+                                localStorage.setItem("blitz_campaign_level", levelNum.toString());
+                                localStorage.setItem("blitz_selected_campaign_level", levelNum.toString()); // For potential use by game screen
+
+                                _createComponent("game");
+                            }, true); // Use capture phase
+                            console.log(`Attached custom listener to ${elementId}`);
+                        }
+                    }
+
                     if (canvas) {
                         const observer = new MutationObserver(function(mutations) {
                             mutations.forEach(function(mutation) {
                                 if (mutation.type === 'childList') {
                                     // Check if home component was added/removed
                                     setTimeout(updateLeaderboardButtonVisibility, 50);
+
+                                    const playButton = document.getElementById('play_button');
+                                    if (playButton && !playButton.dataset.customListenerAttached) {
+                                        playButton.dataset.customListenerAttached = 'true';
+
+                                        playButton.addEventListener('click', function(event) {
+                                            console.log('Custom play_button listener triggered');
+                                            event.stopImmediatePropagation();
+
+                                            localStorage.setItem("blitz_game_type", "campaign");
+                                            // localStorage.setItem("blitz_campaign_level", "1"); // Default level for campaign entry
+                                            // localStorage.setItem("blitz_campaign_runs", "5");   // Default runs for campaign entry (level 1)
+
+                                            _clearScreen();
+                                            _createComponent("campaign");
+
+                                        }, true);
+                                    }
+
+                                    // Attach listeners for campaign level buttons if they appear
+                                    const campaignScreen = document.getElementById('campaign');
+                                    if (campaignScreen) {
+                                        attachCampaignLevelListener('level1_button', 5, 1);
+                                        attachCampaignLevelListener('level1_play', 5, 1);
+                                        attachCampaignLevelListener('level2_button', 6, 2);
+                                        attachCampaignLevelListener('level2_play', 6, 2);
+                                        attachCampaignLevelListener('level3_button', 7, 3);
+                                        attachCampaignLevelListener('level3_play', 7, 3);
+                                    }
                                 }
                             });
                         });
