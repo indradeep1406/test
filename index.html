@@ -194,10 +194,8 @@
 
                                 _clearScreen();
                                 localStorage.setItem("blitz_game_type", "campaign");
-                                localStorage.setItem("blitz_campaign_runs", runsValue.toString());
-                                // Also setting blitz_campaign_level to ensure consistency if game logic uses it
-                                localStorage.setItem("blitz_campaign_level", levelNum.toString());
-                                localStorage.setItem("blitz_selected_campaign_level", levelNum.toString()); // For potential use by game screen
+                                localStorage.setItem("blitz_current_campaign_target_score", runsValue.toString());
+                                localStorage.setItem("blitz_current_campaign_attempting_level", levelNum.toString());
 
                                 _createComponent("game");
                             }, true); // Use capture phase
